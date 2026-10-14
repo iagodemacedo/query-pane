@@ -1,0 +1,29 @@
+{
+  "name": "query-pane",
+  "version": "0.2.0",
+  "description": "Painel lateral com as queries do Athena da sessão: dados escaneados, custo, alertas de query cara e sem partição, status da sessão AWS, prévia do resultado e atalhos para o CSV",
+  "author": {
+    "name": "Iago Macedo",
+    "url": "https://github.com/iagodemacedo"
+  },
+  "homepage": "https://github.com/iagodemacedo/query-pane",
+  "repository": "https://github.com/iagodemacedo/query-pane",
+  "license": "MIT",
+  "keywords": [
+    "athena",
+    "aws",
+    "sql",
+    "cost",
+    "query",
+    "mod"
+  ],
+  "types": "./types/index.d.ts",
+  "userConfig": {
+    "alertGiB": {
+      "type": "number",
+      "title": "Alerta de query cara (GiB)",
+      "description": "Avisa quando uma query escaneia pelo menos este volume, em GiB",
+      "default": 10
+    }
+  }
+}

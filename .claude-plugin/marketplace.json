@@ -1,0 +1,15 @@
+{
+  "name": "query-pane",
+  "description": "The query-pane mod for Claude Code",
+  "owner": {
+    "name": "Iago Macedo",
+    "url": "https://github.com/iagodemacedo"
+  },
+  "plugins": [
+    {
+      "name": "query-pane",
+      "source": "./",
+      "description": "Painel lateral com as queries do Athena: dados escaneados, custo, alertas, status da AWS e prévia do resultado"
+    }
+  ]
+}
