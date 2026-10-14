@@ -1,6 +1,6 @@
 {
   "name": "query-pane",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Painel lateral com as queries do Athena da sessão: dados escaneados, custo, alertas de query cara e sem partição, status da sessão AWS, prévia do resultado e atalhos para o CSV",
   "author": {
     "name": "Iago Macedo",

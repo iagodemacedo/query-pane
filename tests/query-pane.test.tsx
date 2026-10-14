@@ -3,6 +3,7 @@ import type { On } from 'claude-code'
 
 const ID = '1b2c3d4e-0000-4abc-8def-123456789abc'
 const GiB = 1024 ** 3
+const PLUGIN = 'query-pane'
 
 const PANE = {
   component: 'Pane',
@@ -75,6 +76,7 @@ const world = (on: On, w: Partial<World> = {}): World => {
     return { value: undefined }
   })
   on('ui.open', () => ({ value: { isPlaced: true } }))
+  on('fs.stat', (_$, e) => (e.path.endsWith('.csv') && !e.path.includes('fora') ? { value: { kind: 'file' } } : { deny: 'ENOENT' }))
   return state
 }
 
@@ -151,7 +153,7 @@ test('prévia, abrir csv e status aws', async ($, on) => {
     expect(await ui.find({ text: /aws ok · conta 123456789012/ })).toBeDefined()
     await ui.unmount()
   }
-  expect(w.ran.some(a => a[0] === 'open' && a[1] === '/tmp/out/minha query.csv')).toBe(true)
+  expect(w.ran.some(a => a[0] === 'open' && a.at(-1) === '/tmp/out/minha query.csv')).toBe(true)
 })
 
 test('sessão aws expirada aparece no topo e no card', async ($, on) => {
@@ -171,4 +173,16 @@ test('chamada sem QueryExecutionId não entra no painel', async ($, on) => {
   await runQuery($, on, 'ok')
   const ui = await $.ui.mount({ plugin: 'query-pane', surface: 'terminal', ...PANE })
   expect(await ui.find({ text: /nenhuma query nesta sessão/ })).toBeDefined()
+})
+
+test('abrir csv recusa caminho que não é um .csv local existente', async ($, on) => {
+  const clock = mock.clock(on)
+  const w = world(on)
+  await runQuery($, on, `QueryExecutionId: ${ID}\nCSV_PATH: /tmp/fora/nao-existe.csv\n`)
+  await clock.advance(0)
+
+  const ui = await $.ui.mount({ plugin: PLUGIN, surface: 'terminal', ...PANE })
+  await ui.press({ key: `open-${ID}` })
+  expect(w.ran.some(a => a[0] === 'open')).toBe(false)
+  expect(w.toasts.some(t => /não é um arquivo \.csv local/.test(t))).toBe(true)
 })

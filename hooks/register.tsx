@@ -324,8 +324,17 @@ const toggle = async ($: EngineInterface, id: string) => {
   }
 }
 
+// The path comes from a tool's output, so `open` only ever gets an existing local
+// .csv file: never a URL, an app bundle or anything a crafted output could name.
+export const isOpenableCsv = (path: string) => path.startsWith('/') && /\.csv$/i.test(path) && !path.includes('\0')
+
 const openFile = async ($: EngineInterface, path: string, reveal: boolean) => {
-  const run = await $.process.run(reveal ? ['open', '-R', path] : ['open', path]).catch(() => ({ exitCode: 1 }))
+  const stat = isOpenableCsv(path) ? await $.fs.stat(path).catch(() => undefined) : undefined
+  if (stat?.kind !== 'file') {
+    $.ui.toast(`não abri ${path}: não é um arquivo .csv local`)
+    return
+  }
+  const run = await $.process.run(reveal ? ['open', '-R', '--', path] : ['open', '--', path]).catch(() => ({ exitCode: 1 }))
   if (run.exitCode !== 0) $.ui.toast(`não consegui abrir ${path}`)
 }
 
